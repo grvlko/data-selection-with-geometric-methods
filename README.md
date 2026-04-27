@@ -9,37 +9,29 @@
 Для оценки эффективности будут реализованы 4 базовых метода:
 - Random Sampling
 - Perplexity Filtering
-- Word-piece ratio
-- LLM-based classifier
+- ID filtering
 
-Будут протестированы 2-3 алгоритма выбора, базирующихся на ID, ER и т.д (смотреть arXiv:2509.25359). Сравнение будет проводиться на четырех объемах обучающей выборки для анализа масштабируемости методов:
-- 10%, 40% и 70% от общего объема данных.
-- 100% (Full Training): Обучение на полном датасете для определения верхнего предела качества.
+Сравнение будет проводиться на четырех объемах обучающей выборки для анализа масштабируемости методов: 10%, 30% 70% от общего объема данных и 100% (Обучение на полном датасете для определения верхнего предела качества).
 
-Ожидаемые результаты:
-Построение кривых обучения (scaling laws), демонстрирующих, позволяют ли геометрические методы достичь сопоставимых значений потерь (loss) и качества на тестах при использовании значительно меньшего объема данных по сравнению с baseline-подходами.
+## Результат
 
-Papers:
-- Data Diversity Matters for Robust Instruction Tuning
-- Data Efficacy for Language Model Training
-- The Best of Both Worlds: Bridging Quality and Diversity in Data Selection with Bipartite Graph
-- Quality-Weighted Vendi Scores and Their Application to Diverse Experimental Design
-- Ordered Semantically Diverse Sampling for Textual Data
+Кривые обучения (scaling laws), демонстрирующие остуствие преимущества геометрические методов перед baseline-подходами в `geom-distill-experiment.ipynb` на gpt-2-like модели размером 6М, датасете wikitext-2 и `geom_distill_experiment_wikitext-103.ipynb` на gpt-2-like модели размером 12М, датасете wikitext-103.
+
+В поисках причин отсутствия результата в `diversity_of_geom.ipynb` проверяется разнообразие отфильтрованных по ID данных. С этим проблем нет, откуда мы делаем вывод, что основная проблема это маленький размер моделей, не способных эффективно обучаться на сложных данных, оставленных геометрической фильтрацией.
+
+Дополнительно попробовали комбинацию геометрических метрик в `geom-to-utility-proxy-selection.ipynb`, результат незначительно улучшился. Проверили гипотезу в рамках CV в `resnet_cifar100_geom_distill.ipynb`, получили аналогичные неудовлетворительные результаты.
+
+Также в `mnist_forgetting_selected_advantage.ipynb` воспроизведен один из результататов статьи arxiv.org:2306.04723, на котором основывается наша гипотеза. При обучении модели на данных, очиенных от примеров, которые модель выучивает и не забывает, метрики почти не ухудшаются. Так можно ускорить обучение на 70%.
+
+## Статьи:
+
+- When Less is More: Investigating Data Pruning for Pretraining LLMs at Scale
 - RETHINKING DATA SELECTION AT SCALE: RANDOM SELECTION IS ALMOST ALL YOU NEED
-
-## Текущие результаты
-
-- В `mnist_forgetting_selected_advantage.ipynb` воспроизведен один из результататов статьи arxiv.org:2306.04723, на котором основывается наша гипотеза. При обучении модели на данных, очиенных от примеров, которые модель выучивает и не забывает, метрики почти не ухудшаются. Так можно ускорить обучение на 70%.
-- В `geom-distill-experiment.ipynb` на gpt-2-like модели размером 5M и датасете wikitext-2 сравниваются random, perplexity, ID фильтрации на 10%, 40% и 70%. Результаты не подтверждают теорию, но постановка этого эксперимента слабая.
-
-Предполагается, что в первом случае данные *хорошие*, сложные примеры действительно близки к разделяющим поверхностям и отделяются от легких. Соответсвенно во втором случае хочется подметить, что в данных много *плохих* сэмплов, например, сломанных вики-заголовков, помимо нормальных параграфов. Они могут портить отобранные выборки, путаться с действительно геометрически сложными примерами. Также модель может быть слишком слабой, чтобы выучиться хорошо на сложных данных.
-
-## План
-
-- Обучить бОльшую модель, затем попробовать другие модели, в т.ч. из других областей
-- Тщательнее провести подбор данных
-- Реализовать другие (в т.ч. более робастные) методы оценки ID
-- Провести замеры на всех конфигурациях, сравнить модели, методы, найти scaling laws
+- Intrinsic Dimension Estimation for Robust Detection of AI-Generated Texts
+- From Internal Representations to Text Quality: A Geometric Approach to LLM Evaluation
+- The Best of Both Worlds: Bridging Quality and Diversity in Data Selection with Bipartite Graph
+- Data Diversity Matters for Robust Instruction Tuning
+- An Empirical Study of Example Forgetting during Deep Neural Network Learning
 
 ## Команда
 
